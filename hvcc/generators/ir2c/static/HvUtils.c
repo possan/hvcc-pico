@@ -52,3 +52,27 @@ hv_uint32_t hv_string_to_hash(const char *str) {
   x ^= (x >> 15);
   return x;
 }
+
+uint32_t hv_align_size(uint32_t inputsize) {
+  #if FORCE_MEMORY_ALIGNMENT_BITS > 0
+
+  #if FORCE_MEMORY_ALIGNMENT_BITS == 32
+  uint16_t shift = 2;
+  uint16_t offset = 3;
+  #elif FORCE_MEMORY_ALIGNMENT_BITS == 16
+  uint16_t shift = 1;
+  uint16_t offset = 1;
+  #else
+  uint16_t shift = 0;
+  uint16_t offset = 0;
+  #endif
+
+  uint32_t aligned = ((inputsize + offset) >> shift) << shift;
+  return aligned;
+
+  #else
+
+  return inputsize;
+
+  #endif
+}

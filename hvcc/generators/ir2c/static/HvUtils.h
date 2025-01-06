@@ -170,6 +170,12 @@
     #define hv_malloc(_n) malloc(_n)
     #define hv_free(x) free(x)
   #endif
+#elif HV_PICO
+  #define hv_alloca(_n) alloca(_n)
+  #define hv_realloc(a, b) realloc(a, b)
+  #define hv_malloc(_n) (uint32_t *)malloc((_n)+4);
+  #define hv_free(x) free(x)
+  #define FORCE_MEMORY_ALIGNMENT_BITS 32
 #else
   #include <alloca.h>
   #define hv_alloca(_n) alloca(_n)
@@ -192,6 +198,24 @@
     #define hv_malloc(_n) malloc(_n)
     #define hv_free(_n) free(_n)
   #endif
+#endif
+
+// Memory alignment
+
+#ifndef FORCE_MEMORY_ALIGNMENT_BITS
+#ifdef HV_FORCE_MEMORY_ALIGNMENT_BITS
+#define FORCE_MEMORY_ALIGNMENT_BITS HV_FORCE_MEMORY_ALIGNMENT_BITS
+#else // HV_FORCE_MEMORY_ALIGNMENT_BITS
+#define FORCE_MEMORY_ALIGNMENT_BITS 0
+#endif // HV_FORCE_MEMORY_ALIGNMENT_BITS
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+uint32_t hv_align_size(uint32_t inputsize);
+#ifdef __cplusplus
+}
 #endif
 
 // Assert

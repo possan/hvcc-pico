@@ -44,7 +44,7 @@ HvMessage *msg_initWithBang(HvMessage *m, hv_uint32_t timestamp) {
 HvMessage *msg_initWithSymbol(HvMessage *m, hv_uint32_t timestamp, const char *s) {
   m->timestamp = timestamp;
   m->numElements = 1;
-  m->numBytes = sizeof(HvMessage) + (hv_uint16_t) hv_strlen(s);
+  m->numBytes = sizeof(HvMessage) + (hv_uint16_t) msg_getSymbolSize(s);
   msg_setSymbol(m, 0, s);
   return m;
 }
@@ -71,7 +71,7 @@ void msg_copyToBuffer(const HvMessage *m, char *buffer, hv_size_t len) {
   char *p = buffer + len_r; // points to the end of the base message
   for (int i = 0; i < msg_getNumElements(m); ++i) {
     if (msg_isSymbol(m,i)) {
-      const hv_size_t symLen = (hv_size_t) hv_strlen(msg_getSymbol(m,i)) + 1; // include the trailing null char
+      const hv_size_t symLen = (hv_size_t) msg_getSymbolSize(msg_getSymbol(m,i));
       hv_assert(len_r + symLen <= len); // stay safe!
       hv_strncpy(p, msg_getSymbol(m,i), symLen);
       msg_setSymbol(r, i, p);
